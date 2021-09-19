@@ -2,10 +2,12 @@
  * @author: Edson A. Terceros T.
  */
 
-package com.sales.market.model;
+package com.sales.market.enums;
 
 public enum ItemInstanceStatus {
     SOLD,
     AVAILABLE,
-    SCREWED
+    SCREWED,
+    MAINTENANCE,
+    ON_TRANSPORTATION
 }

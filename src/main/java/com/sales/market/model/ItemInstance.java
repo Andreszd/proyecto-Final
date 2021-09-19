@@ -5,9 +5,13 @@
 package com.sales.market.model;
 
 import com.sales.market.dto.ItemInstanceDto;
+import com.sales.market.enums.ItemInstanceStatus;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
+import java.math.BigDecimal;
 
 @Entity
 public class ItemInstance extends ModelBase<ItemInstanceDto> {
@@ -17,13 +21,12 @@ public class ItemInstance extends ModelBase<ItemInstanceDto> {
 
     private Boolean featured = Boolean.FALSE;
 
-    // todo generalmente se usa BigDecimal
     private Double price;
-    // todo estados AVAILABLE, SOLD, MAINTENANCE, ON_TRANSPORTATION
-    // private ItemInstanceState itemInstanceState;
-    // todo agregar totalCost
 
-    private ItemInstanceStatus itemInstanceStatus;
+    private BigDecimal totalCost;
+
+    @Enumerated(EnumType.STRING)
+    private ItemInstanceStatus itemInstanceStatus = ItemInstanceStatus.AVAILABLE;
 
     public Item getItem() {
         return item;
@@ -45,7 +48,7 @@ public class ItemInstance extends ModelBase<ItemInstanceDto> {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -55,6 +58,23 @@ public class ItemInstance extends ModelBase<ItemInstanceDto> {
 
     public void setFeatured(Boolean featured) {
         this.featured = featured;
+    }
+
+
+    public BigDecimal getTotalCost() {
+        return totalCost;
+    }
+
+    public void setTotalCost(BigDecimal totalCost) {
+        this.totalCost = totalCost;
+    }
+
+    public ItemInstanceStatus getItemInstanceStatus() {
+        return itemInstanceStatus;
+    }
+
+    public void setItemInstanceStatus(ItemInstanceStatus itemInstanceStatus) {
+        this.itemInstanceStatus = itemInstanceStatus;
     }
 
     /*@Override

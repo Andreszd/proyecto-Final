@@ -6,10 +6,7 @@ package com.sales.market;
 
 import com.sales.market.model.*;
 import com.sales.market.repository.BuyRepository;
-import com.sales.market.service.CategoryService;
-import com.sales.market.service.ItemInstanceService;
-import com.sales.market.service.ItemService;
-import com.sales.market.service.SubCategoryService;
+import com.sales.market.service.*;
 import io.micrometer.core.instrument.util.IOUtils;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -27,19 +24,26 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
     private final SubCategoryService subCategoryService;
     private final ItemService itemService;
     private final ItemInstanceService itemInstanceService;
+    private final ItemInventoryServiceImpl itemInventoryServiceImpl;
 
     SubCategory beverageSubCat = null;
 
     // injeccion evita hacer instancia   = new Clase();
     // bean pueden tener muchos campos y otros beans asociados
 
-    public DevelopmentBootstrap(BuyRepository buyRepository, CategoryService categoryService,
-            SubCategoryService subCategoryService, ItemService itemService, ItemInstanceService itemInstanceService) {
+    public DevelopmentBootstrap(BuyRepository buyRepository,
+                                CategoryService categoryService,
+                                SubCategoryService subCategoryService,
+                                ItemService itemService,
+                                ItemInstanceService itemInstanceService,
+                                ItemInventoryService itemInventoryService,
+                                ItemInventoryServiceImpl itemInventoryServiceImpl) {
         this.buyRepository = buyRepository;
         this.categoryService = categoryService;
         this.subCategoryService = subCategoryService;
         this.itemService = itemService;
         this.itemInstanceService = itemInstanceService;
+        this.itemInventoryServiceImpl = itemInventoryServiceImpl;
     }
 
     @Override
@@ -58,6 +62,8 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         persistCategoriesAndSubCategories();
         Item maltinItem = persistItems(beverageSubCat);
         persistItemInstances(maltinItem);
+
+        persistItemsInventory();
     }
 
     private void persistItemInstances(Item maltinItem) {
@@ -134,5 +140,19 @@ public class DevelopmentBootstrap implements ApplicationListener<ContextRefreshe
         Buy buy = new Buy();
         buy.setValue(value);
         buyRepository.save(buy);
+    }
+
+    private void persistItemsInventory(){
+        createItemsInventory(1L, new BigDecimal(100), new BigDecimal(100));
+    }
+
+    private ItemInventory createItemsInventory(Long itemId,
+                                               BigDecimal lowerBoundThreshold,
+                                               BigDecimal upperBoundThreshold){
+
+        ItemInventory itemInventory = new ItemInventory();
+        itemInventory.setLowerBoundThreshold(lowerBoundThreshold);
+        itemInventory.setUpperBoundThreshold(upperBoundThreshold);
+        return itemInventoryServiceImpl.createItemInventory(itemId, itemInventory);
     }
 }
