@@ -1,22 +1,17 @@
-package com.sales.market.model;
+package com.sales.market.dto;
 
-import com.sales.market.dto.ItemInventoryEntryDto;
 import com.sales.market.enums.MovementType;
+import com.sales.market.model.ItemInventory;
+import com.sales.market.model.ItemInventoryEntry;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Entity
-public class ItemInventoryEntry extends ModelBase<ItemInventoryEntryDto> {
-    @ManyToOne
+public class ItemInventoryEntryDto extends DtoBase<ItemInventoryEntry> {
     private ItemInventory itemInventory;
 
-    @Enumerated(EnumType.STRING)
     private MovementType movementType;
 
     private BigDecimal quantity; // represent sale or buy instances quantity
-
-    //private String itemInstanceSkus; represents a list of the sku of the involved item instances
 
     public ItemInventory getItemInventory() {
         return itemInventory;
@@ -41,4 +36,5 @@ public class ItemInventoryEntry extends ModelBase<ItemInventoryEntryDto> {
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
     }
+
 }
