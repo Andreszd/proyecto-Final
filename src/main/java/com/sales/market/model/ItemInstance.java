@@ -23,7 +23,7 @@ public class ItemInstance extends ModelBase<ItemInstanceDto> {
 
     private Double price;
 
-    private BigDecimal totalCost;
+    private BigDecimal totalCost; //TODO what is totalCost ?
 
     @Enumerated(EnumType.STRING)
     private ItemInstanceStatus itemInstanceStatus = ItemInstanceStatus.AVAILABLE;

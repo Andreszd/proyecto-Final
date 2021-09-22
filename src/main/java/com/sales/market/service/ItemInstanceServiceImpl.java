@@ -5,23 +5,23 @@
 package com.sales.market.service;
 
 import com.sales.market.enums.ItemInstanceStatus;
+import com.sales.market.model.Item;
 import com.sales.market.model.ItemInstance;
 import com.sales.market.repository.GenericRepository;
 import com.sales.market.repository.ItemInstanceRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> implements ItemInstanceService {
     private final ItemInstanceRepository repository;
     private final ItemService itemService;
 
-    public ItemInstanceServiceImpl(ItemInstanceRepository repository, ItemService itemService) {
+    public ItemInstanceServiceImpl(ItemInstanceRepository repository,
+                                   ItemService itemService) {
         this.repository = repository;
         this.itemService = itemService;
     }
@@ -56,5 +56,23 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
         return repository.findAll().stream()
                 .filter(item -> item.getItemInstanceStatus() == typeOfEnum)
                 .collect(Collectors.toList());
+    }
+
+    public ItemInstance saleItem(Long idItemInstance){
+        ItemInstance itemInstance = repository.getById(idItemInstance);
+        itemInstance.setItemInstanceStatus(ItemInstanceStatus.SOLD);
+        itemInstance = repository.save(itemInstance);
+        //itemInventoryService.updateStockItem(itemInstance.getItem().getId());
+        // FIXME generate dependencies cycle
+        return repository.save(itemInstance);
+    }
+
+    public ItemInstance save(ItemInstance model, Long idItem) {
+        Item item;
+        if (model.getItem() == null){
+           item = itemService.findById(idItem);
+           model.setItem(item);
+        }
+        return super.save(model);
     }
 }

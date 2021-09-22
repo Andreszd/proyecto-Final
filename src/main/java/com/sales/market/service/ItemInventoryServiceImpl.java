@@ -6,6 +6,10 @@ import com.sales.market.repository.GenericRepository;
 import com.sales.market.repository.ItemInventoryRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ItemInventoryServiceImpl extends GenericServiceImpl<ItemInventory> implements ItemInventoryService {
     private final ItemInventoryRepository repository;
@@ -25,9 +29,37 @@ public class ItemInventoryServiceImpl extends GenericServiceImpl<ItemInventory> 
 
     public ItemInventory createItemInventory(Long idItem, ItemInventory itemInventory) {
         Item item = itemService.findById(idItem);
+        if (item == null) {
+            System.out.println("error");
+        }
         itemInventory.setItem(item);
         itemInventory.setTotalPrice(itemInstanceService.sumTotalPriceByIdItem(idItem));
         itemInventory.setStockQuantity(itemInstanceService.amountItemsInStock());
         return repository.save(itemInventory);
+    }
+
+    public List<ItemInventory> getItemInventoryByIdItem(Long idItem){
+        List<ItemInventory> itemInventories, itemInventoriesByIdItem;
+        itemInventories = repository.findAll();
+        itemInventoriesByIdItem = itemInventories
+                .stream()
+                .filter(inventory -> inventory.getItem().getId().equals(idItem))
+                .collect(Collectors.toList());
+
+        return itemInventoriesByIdItem;
+    }
+
+    public void updateStockItem(Long idItem){
+        BigDecimal amountItemsInStock = itemInstanceService.amountItemsInStock();
+        ItemInventory itemInventory = getItemInventoryByIdItem(idItem).get(0);
+        if (itemInventory != null){
+            if (amountItemsInStock.compareTo(itemInventory.getLowerBoundThreshold()) < -1){
+                //amount stock is less than limit defined
+                System.out.println("amount stock is less than limit defined");
+                //TODO define feature send email of advice about actual stock to the admin
+            }
+            itemInventory.setStockQuantity(amountItemsInStock);
+            repository.save(itemInventory);
+        }
     }
 }
