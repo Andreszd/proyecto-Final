@@ -7,7 +7,5 @@ package com.sales.market.enums;
 public enum ItemInstanceStatus {
     SOLD,
     AVAILABLE,
-    SCREWED,
-    MAINTENANCE,
-    ON_TRANSPORTATION
+    SCREWED
 }

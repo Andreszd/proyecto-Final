@@ -29,15 +29,16 @@ public class ItemInstanceController extends GenericController<ItemInstance, Item
         this.itemInventoryEntryService = itemInventoryEntryService;
     }
 
-    @PutMapping("/{idItem}/sale")
-    public ItemInstanceDto saleItem(@PathVariable("idItem") @NotNull Long idItem){
-        //ItemInstance itemInstance = service.saleItem(idItem);
-        ItemInstanceDto itemInstanceDto = toDto(service.saleItem(idItem));
-        itemInventoryService.updateStockItem(itemInstanceDto.getItem().getId());
-        return itemInstanceDto;
+    @PutMapping("/sale/{idItem}/item")
+    public List<ItemInstanceDto> saleItem(@PathVariable("idItem") @NotNull Long idItem,
+                                    @RequestBody List<ItemInstanceDto> itemInstanceDtos){
+
+        List<ItemInstanceDto> itemInstancesDto = toDto(service.saleItems(itemInstanceDtos));
+        itemInventoryService.updateStockItem(idItem);
+        return itemInstancesDto;
     }
 
-    //TODO add mode of filter with iditem and status
+    //TODO add mode  filter with iditem and status
     @GetMapping("/state")
     public List<ItemInstanceDto> finAllByStatus(@RequestParam(name = "type") @NotNull String type){
         ItemInstanceStatus state = ItemInstanceStatus.valueOf(type.toUpperCase());

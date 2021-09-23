@@ -4,6 +4,7 @@
 
 package com.sales.market.service;
 
+import com.sales.market.dto.ItemInstanceDto;
 import com.sales.market.enums.ItemInstanceStatus;
 import com.sales.market.enums.MovementType;
 import com.sales.market.model.Item;
@@ -66,6 +67,17 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
         //itemInventoryService.updateStockItem(itemInstance.getItem().getId());
         // FIXME generate dependencies cycle
         return repository.save(itemInstance);
+    }
+
+    public List<ItemInstance> saleItems(List<ItemInstanceDto> itemInstanceDtos){
+        List<ItemInstance> itemInstances = new ArrayList<>();
+        for (ItemInstanceDto itemInstance : itemInstanceDtos) {
+            Long idItem = itemInstance.getId();
+            if (idItem != null){
+                itemInstances.add(saleItem(idItem));
+            }
+        }
+        return itemInstances;
     }
 
     public ItemInstance save(ItemInstance model, Long idItem) {
