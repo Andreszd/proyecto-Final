@@ -37,11 +37,11 @@ public class ItemInstanceController extends GenericController<ItemInstance, Item
         return itemInstanceDto;
     }
 
-    @GetMapping
-    public List<ItemInstanceDto> finAllByStatus(@PathVariable @NotNull Long idItem,
-                                                @RequestParam @NotNull String itemIntanceStatus){
-        ItemInstanceStatus status = ItemInstanceStatus.valueOf(itemIntanceStatus.toUpperCase());
-         
+    //TODO add mode of filter with iditem and status
+    @GetMapping("/state")
+    public List<ItemInstanceDto> finAllByStatus(@RequestParam(name = "type") @NotNull String type){
+        ItemInstanceStatus state = ItemInstanceStatus.valueOf(type.toUpperCase());
+        return toDto(service.getItemsInstanceByState(state));
     }
 
     @PostMapping("/{idItem}/item")

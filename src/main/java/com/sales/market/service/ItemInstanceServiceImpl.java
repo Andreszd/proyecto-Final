@@ -48,15 +48,14 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
     }
 
     public BigDecimal amountItemsInStock(){
-        int amountItems = getItemsInstanceByState(ItemInstanceStatus.AVAILABLE.name()).size();
+        int amountItems = getItemsInstanceByState(ItemInstanceStatus.AVAILABLE).size();
         return new BigDecimal(amountItems);
     }
 
     //TODO check when the param type isnt how enum type
-    public List<ItemInstance> getItemsInstanceByState(String type){
-        ItemInstanceStatus typeOfEnum = ItemInstanceStatus.valueOf(type);
+    public List<ItemInstance> getItemsInstanceByState(ItemInstanceStatus type){
         return repository.findAll().stream()
-                .filter(item -> item.getItemInstanceStatus() == typeOfEnum)
+                .filter(item -> item.getItemInstanceStatus() == type)
                 .collect(Collectors.toList());
     }
 
