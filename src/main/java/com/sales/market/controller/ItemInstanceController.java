@@ -29,13 +29,18 @@ public class ItemInstanceController extends GenericController<ItemInstance, Item
         this.itemInventoryEntryService = itemInventoryEntryService;
     }
 
-    @PutMapping("/sale/{idItem}/item")
+    @PutMapping("/{idItem}/item")
     public List<ItemInstanceDto> saleItem(@PathVariable("idItem") @NotNull Long idItem,
-                                    @RequestBody List<ItemInstanceDto> itemInstanceDtos){
+                                    @RequestBody List<ItemInstanceDto> itemInstanceDtos,
+                                    @RequestParam(name = "movement") String movement){
 
-        List<ItemInstanceDto> itemInstancesDto = toDto(service.saleItems(itemInstanceDtos));
+        ItemInstanceStatus itemInstanceStatus = ItemInstanceStatus.findEnum(movement);
+        List<ItemInstance> itemInstances = service.updateStatusItems(itemInstanceDtos, itemInstanceStatus);
         itemInventoryService.updateStockItem(idItem);
-        return itemInstancesDto;
+        //FIXME when try sale items with status distint of SALE, it shouldnt register movement
+        MovementType movementType = service.parseEnumItemInstanceToEnumMovementType(itemInstanceStatus);
+        itemInventoryEntryService.registerMovement(movementType, idItem, itemInstances);
+        return toDto(itemInstances);
     }
 
     //TODO add mode  filter with iditem and status

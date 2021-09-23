@@ -1,5 +1,6 @@
 package com.sales.market.dto;
 
+import com.sales.market.enums.ItemInstanceStatus;
 import com.sales.market.model.ItemInstance;
 
 public class ItemInstanceDto extends DtoBase<ItemInstance> {
@@ -7,6 +8,7 @@ public class ItemInstanceDto extends DtoBase<ItemInstance> {
     private String identifier;// sku
 
     private Boolean featured = Boolean.FALSE;
+    private ItemInstanceStatus itemInstanceStatus;
 
     // todo generalmente se usa BigDecimal
     private Double price;
@@ -42,5 +44,13 @@ public class ItemInstanceDto extends DtoBase<ItemInstance> {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public ItemInstanceStatus getItemInstanceStatus() {
+        return itemInstanceStatus;
+    }
+
+    public void setItemInstanceStatus(ItemInstanceStatus itemInstanceStatus) {
+        this.itemInstanceStatus = itemInstanceStatus;
     }
 }

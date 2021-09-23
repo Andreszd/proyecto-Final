@@ -1,0 +1,15 @@
+package com.sales.market.enums;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+class ItemInstanceStatusTest {
+
+    @Test
+    void findEnum() {
+        assertEquals(ItemInstanceStatus.SOLD, ItemInstanceStatus.findEnum("SOLD"));
+    }
+}

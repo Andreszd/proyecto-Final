@@ -60,24 +60,42 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
                 .collect(Collectors.toList());
     }
 
-    public ItemInstance saleItem(Long idItemInstance){
+    public ItemInstance updateStatusItem(Long idItemInstance, ItemInstanceStatus itemInstanceStatus){
         ItemInstance itemInstance = repository.getById(idItemInstance);
-        itemInstance.setItemInstanceStatus(ItemInstanceStatus.SOLD);
-        itemInstance = repository.save(itemInstance);
-        //itemInventoryService.updateStockItem(itemInstance.getItem().getId());
-        // FIXME generate dependencies cycle
+        if (itemInstanceStatus == ItemInstanceStatus.AVAILABLE){
+            return itemInstance;
+        }
+
+        if (itemInstanceStatus == ItemInstanceStatus.SCREWED  &&
+                itemInstance.getItemInstanceStatus() != ItemInstanceStatus.SOLD){
+            itemInstance.setItemInstanceStatus(itemInstanceStatus);
+            itemInstance.setPrice(0L);
+        }
+
+        if (itemInstanceStatus == ItemInstanceStatus.SOLD &&
+                itemInstance.getItemInstanceStatus() != ItemInstanceStatus.SCREWED){
+            itemInstance.setItemInstanceStatus(itemInstanceStatus);
+        }
+
         return repository.save(itemInstance);
     }
 
-    public List<ItemInstance> saleItems(List<ItemInstanceDto> itemInstanceDtos){
+
+    public List<ItemInstance> updateStatusItems(List<ItemInstanceDto> itemInstanceDtos,
+                                                ItemInstanceStatus itemInstanceStatus){
         List<ItemInstance> itemInstances = new ArrayList<>();
-        for (ItemInstanceDto itemInstance : itemInstanceDtos) {
-            Long idItem = itemInstance.getId();
-            if (idItem != null){
-                itemInstances.add(saleItem(idItem));
+        try{
+            for (ItemInstanceDto itemInstance : itemInstanceDtos) {
+                Long idItem = itemInstance.getId();
+                if (idItem != null){
+                    itemInstances.add(updateStatusItem(idItem, itemInstanceStatus));
+                }
             }
+            return itemInstances;
+        }catch (IllegalArgumentException exception){
+            System.out.println(exception.getMessage());
+            return itemInstances;
         }
-        return itemInstances;
     }
 
     public ItemInstance save(ItemInstance model, Long idItem) {
@@ -88,11 +106,26 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
         }
         return super.save(model);
     }
+
     public List<ItemInstance> save(List<ItemInstance> itemInstances, Long idItem) {
         List<ItemInstance> result = new ArrayList<>();
         for (ItemInstance itemInstance:itemInstances) {
             result.add(save(itemInstance, idItem));
         }
         return result;
+    }
+
+    public MovementType parseEnumItemInstanceToEnumMovementType(ItemInstanceStatus itemInstanceStatus){
+        MovementType movementType = null;
+        if (ItemInstanceStatus.SOLD == itemInstanceStatus){
+            movementType = MovementType.SALE;
+        }
+        if (ItemInstanceStatus.SCREWED == itemInstanceStatus){
+            movementType =   MovementType.REMOVED;
+        }
+        if (ItemInstanceStatus.AVAILABLE == itemInstanceStatus){
+            movementType =   MovementType.BUY;
+        }
+        return movementType;
     }
 }
