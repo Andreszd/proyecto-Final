@@ -7,16 +7,15 @@ package com.sales.market.model;
 import com.sales.market.dto.ItemInstanceDto;
 import com.sales.market.enums.ItemInstanceStatus;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 public class ItemInstance extends ModelBase<ItemInstanceDto> {
     @OneToOne
     private Item item;
+
+    @Column(unique = true)
     private String identifier;// sku
 
     private Boolean featured = Boolean.FALSE;

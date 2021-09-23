@@ -5,26 +5,28 @@
 package com.sales.market.controller;
 
 import com.sales.market.dto.ItemInstanceDto;
-import com.sales.market.model.Item;
+import com.sales.market.enums.ItemInstanceStatus;
+import com.sales.market.enums.MovementType;
 import com.sales.market.model.ItemInstance;
-import com.sales.market.service.ItemInstanceService;
-import com.sales.market.service.ItemInstanceServiceImpl;
-import com.sales.market.service.ItemInventoryServiceImpl;
-import com.sales.market.service.ItemServiceImpl;
+import com.sales.market.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @RestController
 @RequestMapping("/iteminstances")
 public class ItemInstanceController extends GenericController<ItemInstance, ItemInstanceDto> {
     private ItemInstanceServiceImpl service;
     private ItemInventoryServiceImpl itemInventoryService;
+    private ItemInventoryEntryServiceImpl itemInventoryEntryService;
 
     public ItemInstanceController(ItemInstanceServiceImpl service,
-                                  ItemInventoryServiceImpl itemInventoryService) {
+                                  ItemInventoryServiceImpl itemInventoryService,
+                                  ItemInventoryEntryServiceImpl itemInventoryEntryService) {
         this.service = service;
         this.itemInventoryService = itemInventoryService;
+        this.itemInventoryEntryService = itemInventoryEntryService;
     }
 
     @PutMapping("/{idItem}/sale")
@@ -35,13 +37,20 @@ public class ItemInstanceController extends GenericController<ItemInstance, Item
         return itemInstanceDto;
     }
 
-    @PostMapping("/{idItem}/item")
-    public ItemInstanceDto save(@RequestBody ItemInstanceDto element,
-                             @PathVariable("idItem") Long idItem) {
+    @GetMapping
+    public List<ItemInstanceDto> finAllByStatus(@PathVariable @NotNull Long idItem,
+                                                @RequestParam @NotNull String itemIntanceStatus){
+        ItemInstanceStatus status = ItemInstanceStatus.valueOf(itemIntanceStatus.toUpperCase());
+         
+    }
 
-        ItemInstanceDto itemInstanceDto = toDto(service.save(toModel(element), idItem));
+    @PostMapping("/{idItem}/item")
+    public List<ItemInstanceDto> save(@RequestBody List<ItemInstanceDto> itemInstanceDtos,
+                                @PathVariable("idItem") @NotNull Long idItem) {
+        List<ItemInstance> itemInstances = service.save(toModel(itemInstanceDtos), idItem);
         itemInventoryService.updateStockItem(idItem);
-        return itemInstanceDto;
+        itemInventoryEntryService.registerMovement(MovementType.SALE, idItem, itemInstances);
+        return toDto(itemInstances);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class ItemInventoryServiceImpl extends GenericServiceImpl<ItemInventory> 
         return repository.save(itemInventory);
     }
 
-    public List<ItemInventory> getItemInventoryByIdItem(Long idItem){
+    public List<ItemInventory> getAllItemInventoryByIdItem(Long idItem){
         List<ItemInventory> itemInventories, itemInventoriesByIdItem;
         itemInventories = repository.findAll();
         itemInventoriesByIdItem = itemInventories
@@ -49,9 +49,13 @@ public class ItemInventoryServiceImpl extends GenericServiceImpl<ItemInventory> 
         return itemInventoriesByIdItem;
     }
 
+    public ItemInventory getItemInventoryByIdItem(Long idItem){
+        return getAllItemInventoryByIdItem(idItem).get(0);
+    }
+
     public void updateStockItem(Long idItem){
         BigDecimal amountItemsInStock = itemInstanceService.amountItemsInStock();
-        ItemInventory itemInventory = getItemInventoryByIdItem(idItem).get(0);
+        ItemInventory itemInventory = getItemInventoryByIdItem(idItem);
         if (itemInventory != null){
             if (amountItemsInStock.compareTo(itemInventory.getLowerBoundThreshold()) < -1){
                 //amount stock is less than limit defined
@@ -59,6 +63,7 @@ public class ItemInventoryServiceImpl extends GenericServiceImpl<ItemInventory> 
                 //TODO define feature send email of advice about actual stock to the admin
             }
             itemInventory.setStockQuantity(amountItemsInStock);
+            itemInventory.setTotalPrice(itemInstanceService.sumTotalPriceByIdItem(idItem));
             repository.save(itemInventory);
         }
     }

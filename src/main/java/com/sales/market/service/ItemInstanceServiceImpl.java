@@ -5,6 +5,7 @@
 package com.sales.market.service;
 
 import com.sales.market.enums.ItemInstanceStatus;
+import com.sales.market.enums.MovementType;
 import com.sales.market.model.Item;
 import com.sales.market.model.ItemInstance;
 import com.sales.market.repository.GenericRepository;
@@ -12,6 +13,7 @@ import com.sales.market.repository.ItemInstanceRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,5 +76,12 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
            model.setItem(item);
         }
         return super.save(model);
+    }
+    public List<ItemInstance> save(List<ItemInstance> itemInstances, Long idItem) {
+        List<ItemInstance> result = new ArrayList<>();
+        for (ItemInstance itemInstance:itemInstances) {
+            result.add(save(itemInstance, idItem));
+        }
+        return result;
     }
 }
