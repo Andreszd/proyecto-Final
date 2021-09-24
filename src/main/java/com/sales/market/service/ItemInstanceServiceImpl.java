@@ -103,6 +103,16 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
         if (model.getItem() == null){
            item = itemService.findById(idItem);
            model.setItem(item);
+           model.setItemInstanceStatus(ItemInstanceStatus.AVAILABLE);
+        }
+        return super.save(model);
+    }
+    public ItemInstance save(ItemInstance model) {
+        Item item;
+        if (model.getItem() != null && model.getItem().getId() == null){
+            item = itemService.save(model.getItem());
+            model.setItem(item);
+            model.setItemInstanceStatus(ItemInstanceStatus.AVAILABLE);
         }
         return super.save(model);
     }
@@ -111,6 +121,14 @@ public class ItemInstanceServiceImpl extends GenericServiceImpl<ItemInstance> im
         List<ItemInstance> result = new ArrayList<>();
         for (ItemInstance itemInstance:itemInstances) {
             result.add(save(itemInstance, idItem));
+        }
+        return result;
+    }
+
+    public List<ItemInstance> save(List<ItemInstance> itemInstances) {
+        List<ItemInstance> result = new ArrayList<>();
+        for (ItemInstance itemInstance:itemInstances) {
+            result.add(save(itemInstance));
         }
         return result;
     }

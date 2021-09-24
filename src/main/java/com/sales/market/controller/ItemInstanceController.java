@@ -59,6 +59,19 @@ public class ItemInstanceController extends GenericController<ItemInstance, Item
         return toDto(itemInstances);
     }
 
+    @PostMapping("/item")
+    public List<ItemInstanceDto> save(@RequestBody List<ItemInstanceDto> itemInstanceDtos) {
+        List<ItemInstance> itemInstance = service.save(toModel(itemInstanceDtos));
+        return toDto(itemInstance);
+    }
+/*
+    @PostMapping("/item")
+    public ItemInstanceDto save(@RequestBody ItemInstanceDto itemInstanceDto) {
+        ItemInstance itemInsAVAILABLEtance = service.save(toModel(itemInstanceDto));
+        itemInventoryService.updateStockItem(itemInstance.getItem().getId());
+        return toDto(itemInstance);
+    }
+*/
     @Override
     protected ItemInstanceService getService() {
         return service;
